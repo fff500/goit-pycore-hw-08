@@ -1,3 +1,5 @@
+import pickle
+
 from classes.address_book import AddressBook
 from functions.add_birthday import add_birthday
 from functions.add_contact import add_contact
@@ -11,8 +13,19 @@ def parse_input(user_input):
     cmd = cmd.strip().lower()
     return cmd, *args
 
+def save_data(book, filename="addressbook.pkl"):
+    with open(filename, "wb") as f:
+        pickle.dump(book, f)
+
+def load_data(filename="addressbook.pkl"):
+    try:
+        with open(filename, "rb") as f:
+            return pickle.load(f)
+    except FileNotFoundError:
+        return AddressBook()
+
 def main():
-    contacts = AddressBook()
+    contacts = load_data()
 
     print("Welcome to the assistant bot!")
 
@@ -21,6 +34,7 @@ def main():
         command, *args = parse_input(user_input)
 
         if command in ["close", "exit"]:
+            save_data(contacts)
             print("Good bye!")
             break
         elif command == "hello":
